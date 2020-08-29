@@ -1,0 +1,14 @@
+{
+  "name": "Everyday",
+  "description": "Everyday web content manipulation",
+  "version": "0.0.1",
+  "permissions": ["storage", "http://*/*", "https://*/*"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["web-content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "manifest_version": 2
+}

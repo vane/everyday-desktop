@@ -1,7 +1,8 @@
 import React from 'react';
+import { Editor, EditorState, RichUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBold, faItalic, faList } from '@fortawesome/free-solid-svg-icons';
-import AppEvent from '../../event';
+import { faBold, faItalic } from '@fortawesome/free-solid-svg-icons';
+import 'draft-js/dist/Draft.css';
 
 const textEditorContainer = {
   width: '100%',
@@ -16,59 +17,36 @@ const textEditorToolbar = {
   flexDirection: 'row',
 };
 
-const textEditorContent = {
-  /* border: 'solid 1px #000', */
-  minHeight: '300px',
-  flexGrow: 1,
-};
-
 class TextEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      html: props.html,
-      uid: props.uid,
+      editorState: EditorState.createEmpty(),
     };
   }
 
   componentDidMount() {
-    this.textContent.focus();
+    this.editor.focus();
   }
 
   handleBoldClick = () => {
-    document.execCommand('bold', false);
+    const { editorState } = this.state;
+    this.handleChange(RichUtils.toggleInlineStyle(editorState, 'BOLD'));
+    this.editor.focus();
   }
 
   handleItalicClick = () => {
-    document.execCommand('italic', false);
+    const { editorState } = this.state;
+    this.handleChange(RichUtils.toggleInlineStyle(editorState, 'ITALIC'));
+    this.editor.focus();
   }
 
-  handleListClick = () => {
-    document.execCommand('insertunorderedlist', false);
-  }
-
-  handleInput = (e) => {
-    const { uid } = this.state;
-    new AppEvent(`texteditor.update.${uid}`, {
-      html: e.target.innerHTML,
-      text: e.target.innerText,
-    }).dispatch();
-  }
-
-  handleKeyDown = (e) => {
-    if (e.keyCode === 27) {
-      e.target.contentEditable = false;
-    }
-  }
-
-  handleClick = (e) => {
-    if (e.target.contentEditable === 'false') {
-      e.currentTarget.contentEditable = true;
-    }
+  handleChange = (editorState) => {
+    this.setState({ editorState });
   }
 
   render() {
-    const { html } = this.state;
+    const { editorState } = this.state;
     return (
       <div style={textEditorContainer}>
         <div style={textEditorToolbar}>
@@ -78,18 +56,12 @@ class TextEditor extends React.Component {
           <button type="button" onClick={this.handleItalicClick}>
             <FontAwesomeIcon icon={faItalic} />
           </button>
-          <button type="button" onClick={this.handleListClick}>
-            <FontAwesomeIcon icon={faList} />
-          </button>
         </div>
-        <div
-          ref={(content) => { this.textContent = content; }}
-          onKeyDown={this.handleKeyDown}
-          onClick={this.handleClick}
-          style={textEditorContent}
-          onInput={this.handleInput}
-          contentEditable="true"
-          dangerouslySetInnerHTML={{ __html: html }}
+        <Editor
+          ref={(content) => { this.editor = content; }}
+          placeholder="Enter some text"
+          editorState={editorState}
+          onChange={this.handleChange}
         />
       </div>
     );

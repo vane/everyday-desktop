@@ -4,7 +4,6 @@ import AppEvent from '../../event';
 import NoteListItem from './NoteListItem';
 
 const notesListStyles = {
-  overflow: 'auto',
   height: '60vh',
 };
 

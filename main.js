@@ -26,7 +26,7 @@ global.ctrl.openWebsite = (url) => {
     url = `http://${url}`;
   }
   const b = global.win.getBounds();
-  const v = new BrowserWindow({
+  const bwindow = new BrowserWindow({
     parent: global.win,
     x: b.x,
     y: b.y + 50,
@@ -38,25 +38,26 @@ global.ctrl.openWebsite = (url) => {
       nodeIntegration: false,
     },
   });
-  try {
-    const s = v.webContents.session;
+  const session = bwindow.webContents.session;
+  // load web content extension
+  session.loadExtension(path.join(__dirname, './everyday/extension/web-content')).then(() => {
     ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-      blocker.enableBlockingInSession(s);
+      blocker.enableBlockingInSession(session);
     });
-    s.webRequest.onBeforeRequest({urls:['<all_urls>']}, function(details, callback) {
+    session.webRequest.onBeforeRequest({urls:['<all_urls>']}, function(details, callback) {
       console.log(details);
       callback({cancel: false});
     });
-    v.loadURL(url);
-    v.once('did-finish-load', (e) => {
+    bwindow.loadURL(url);
+    bwindow.once('did-finish-load', (e) => {
        console.log('loaded');
     });
-    v.webContents.once('dom-ready', (e) => {
+    bwindow.webContents.once('dom-ready', (e) => {
       console.log('loaded2');
     })
-  } catch (e) {
-    console.log(e)
-  }
+  }).catch((e) => {
+    console.log(e);
+  });
 }
 global.ctrl.db = db;
 
