@@ -4,11 +4,22 @@ import { faBold, faItalic, faList } from '@fortawesome/free-solid-svg-icons';
 import AppEvent from '../../event';
 
 const textEditorContainer = {
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '20px',
+};
+
+const textEditorToolbar = {
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'row',
 };
 
 const textEditorContent = {
-  minHeight: '200px',
-  border: 'solid 1px #000',
+  /* border: 'solid 1px #000', */
+  minHeight: '300px',
+  flexGrow: 1,
 };
 
 class TextEditor extends React.Component {
@@ -18,6 +29,10 @@ class TextEditor extends React.Component {
       html: props.html,
       uid: props.uid,
     };
+  }
+
+  componentDidMount() {
+    this.textContent.focus();
   }
 
   handleBoldClick = () => {
@@ -32,7 +47,7 @@ class TextEditor extends React.Component {
     document.execCommand('insertunorderedlist', false);
   }
 
-  handleTextChange = (e) => {
+  handleInput = (e) => {
     const { uid } = this.state;
     new AppEvent(`texteditor.update.${uid}`, {
       html: e.target.innerHTML,
@@ -40,11 +55,23 @@ class TextEditor extends React.Component {
     }).dispatch();
   }
 
+  handleKeyDown = (e) => {
+    if (e.keyCode === 27) {
+      e.target.contentEditable = false;
+    }
+  }
+
+  handleClick = (e) => {
+    if (e.target.contentEditable === 'false') {
+      e.currentTarget.contentEditable = true;
+    }
+  }
+
   render() {
     const { html } = this.state;
     return (
       <div style={textEditorContainer}>
-        <div>
+        <div style={textEditorToolbar}>
           <button type="button" onClick={this.handleBoldClick}>
             <FontAwesomeIcon icon={faBold} />
           </button>
@@ -56,8 +83,11 @@ class TextEditor extends React.Component {
           </button>
         </div>
         <div
+          ref={(content) => { this.textContent = content; }}
+          onKeyDown={this.handleKeyDown}
+          onClick={this.handleClick}
           style={textEditorContent}
-          onInput={this.handleTextChange}
+          onInput={this.handleInput}
           contentEditable="true"
           dangerouslySetInnerHTML={{ __html: html }}
         />
