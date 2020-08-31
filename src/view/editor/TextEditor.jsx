@@ -1,7 +1,7 @@
 import React from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBold, faItalic } from '@fortawesome/free-solid-svg-icons';
+import { faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
 import 'draft-js/dist/Draft.css';
 
 const textEditorContainer = {
@@ -29,16 +29,10 @@ class TextEditor extends React.Component {
     this.editor.focus();
   }
 
-  handleBoldClick = (e) => {
+  handleToggleStyle = (e, styleName) => {
     e.preventDefault();
     const { editorState } = this.state;
-    this.handleChange(RichUtils.toggleInlineStyle(editorState, 'BOLD'));
-    this.editor.focus();
-  }
-
-  handleItalicClick = () => {
-    const { editorState } = this.state;
-    this.handleChange(RichUtils.toggleInlineStyle(editorState, 'ITALIC'));
+    this.handleChange(RichUtils.toggleInlineStyle(editorState, styleName));
     this.editor.focus();
   }
 
@@ -51,11 +45,14 @@ class TextEditor extends React.Component {
     return (
       <div style={textEditorContainer}>
         <div style={textEditorToolbar}>
-          <button type="button" onMouseDown={this.handleBoldClick}>
+          <button type="button" onMouseDown={(e) => this.handleToggleStyle(e, 'BOLD')}>
             <FontAwesomeIcon icon={faBold} />
           </button>
-          <button type="button" onClick={this.handleItalicClick}>
+          <button type="button" onMouseDown={(e) => this.handleToggleStyle(e, 'ITALIC')}>
             <FontAwesomeIcon icon={faItalic} />
+          </button>
+          <button type="button" onMouseDown={(e) => this.handleToggleStyle(e, 'UNDERLINE')}>
+            <FontAwesomeIcon icon={faUnderline} />
           </button>
         </div>
         <Editor
