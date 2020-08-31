@@ -1,7 +1,13 @@
 import React from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBold, faItalic, faUnderline } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBold,
+  faItalic,
+  faUnderline,
+  faListOl,
+  faListUl,
+} from '@fortawesome/free-solid-svg-icons';
 import 'draft-js/dist/Draft.css';
 
 const textEditorContainer = {
@@ -29,10 +35,17 @@ class TextEditor extends React.Component {
     this.editor.focus();
   }
 
-  handleToggleStyle = (e, styleName) => {
+  handleInlineStyle = (e, styleName) => {
     e.preventDefault();
     const { editorState } = this.state;
     this.handleChange(RichUtils.toggleInlineStyle(editorState, styleName));
+    this.editor.focus();
+  }
+
+  handleBlockStyle = (e, styleName) => {
+    e.preventDefault();
+    const { editorState } = this.state;
+    this.handleChange(RichUtils.toggleBlockType(editorState, styleName));
     this.editor.focus();
   }
 
@@ -45,14 +58,20 @@ class TextEditor extends React.Component {
     return (
       <div style={textEditorContainer}>
         <div style={textEditorToolbar}>
-          <button type="button" onMouseDown={(e) => this.handleToggleStyle(e, 'BOLD')}>
+          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'BOLD')}>
             <FontAwesomeIcon icon={faBold} />
           </button>
-          <button type="button" onMouseDown={(e) => this.handleToggleStyle(e, 'ITALIC')}>
+          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'ITALIC')}>
             <FontAwesomeIcon icon={faItalic} />
           </button>
-          <button type="button" onMouseDown={(e) => this.handleToggleStyle(e, 'UNDERLINE')}>
+          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'UNDERLINE')}>
             <FontAwesomeIcon icon={faUnderline} />
+          </button>
+          <button type="button" onMouseDown={(e) => this.handleBlockStyle(e, 'ordered-list-item')}>
+            <FontAwesomeIcon icon={faListOl} />
+          </button>
+          <button type="button" onMouseDown={(e) => this.handleBlockStyle(e, 'unordered-list-item')}>
+            <FontAwesomeIcon icon={faListUl} />
           </button>
         </div>
         <Editor
