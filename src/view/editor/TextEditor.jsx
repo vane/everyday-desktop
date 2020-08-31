@@ -29,7 +29,8 @@ class TextEditor extends React.Component {
     this.editor.focus();
   }
 
-  handleBoldClick = () => {
+  handleBoldClick = (e) => {
+    e.preventDefault();
     const { editorState } = this.state;
     this.handleChange(RichUtils.toggleInlineStyle(editorState, 'BOLD'));
     this.editor.focus();
@@ -50,7 +51,7 @@ class TextEditor extends React.Component {
     return (
       <div style={textEditorContainer}>
         <div style={textEditorToolbar}>
-          <button type="button" onClick={this.handleBoldClick}>
+          <button type="button" onMouseDown={this.handleBoldClick}>
             <FontAwesomeIcon icon={faBold} />
           </button>
           <button type="button" onClick={this.handleItalicClick}>
