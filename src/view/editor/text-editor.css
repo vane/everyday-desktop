@@ -1,0 +1,15 @@
+.text-editor-align-left > .public-DraftStyleDefault-ltr {
+    text-align: left;
+}
+
+.text-editor-align-center > .public-DraftStyleDefault-ltr {
+    text-align: center !important;
+}
+
+.text-editor-align-right > .public-DraftStyleDefault-ltr {
+    text-align: right;
+}
+
+.text-editor-align-justify > .public-DraftStyleDefault-ltr {
+    text-align: justify;
+}
