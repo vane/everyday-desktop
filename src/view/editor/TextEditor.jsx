@@ -1,5 +1,7 @@
 import React from 'react';
+import reactCSS from 'reactcss';
 import { Editor, EditorState, RichUtils } from 'draft-js';
+import createStyles from 'draft-js-custom-styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBold,
@@ -15,19 +17,22 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import 'draft-js/dist/Draft.css';
 import './text-editor.css';
+import ColorPicker from './ColorPicker';
+import AppEvent from '../../event';
 
-const textEditorContainer = {
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '20px',
-};
-
-const textEditorToolbar = {
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'row',
-};
+const cssstyles = reactCSS({
+  textEditorContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '20px',
+  },
+  textEditorToolbar: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+});
 
 const blockStyleFn = (block) => {
   const type = block.getType();
@@ -52,16 +57,29 @@ const customStyleMap = {
   },
 };
 
+const { styles, customStyleFn } = createStyles(['font-size', 'color', 'text-transform'], 'CUSTOM_', customStyleMap);
+
 class TextEditor extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      color: '#ffffff',
+      newColor: null,
       editorState: EditorState.createEmpty(),
     };
   }
 
   componentDidMount() {
     this.editor.focus();
+    AppEvent.listen('text.editor.color.change', this.handleTextColorChange);
+  }
+
+  componentWillUnmount() {
+    AppEvent.listen('text.editor.color.change', this.handleTextColorChange);
+  }
+
+  handleTextColorChange = ({ data }) => {
+    this.setState({ newColor: data });
   }
 
   handleInlineStyle = (e, styleName) => {
@@ -86,14 +104,22 @@ class TextEditor extends React.Component {
   }
 
   handleChange = (editorState) => {
-    this.setState({ editorState });
+    const { color, newColor } = this.state;
+    let setColor = color;
+    let newEditorState = editorState;
+    if (newColor !== null) {
+      console.log(color, newColor, styles.color, this.state);
+      newEditorState = styles.color.toggle(editorState, newColor);
+      setColor = newColor;
+    }
+    this.setState({ editorState: newEditorState, newColor: null, color: setColor });
   }
 
   render() {
     const { editorState } = this.state;
     return (
-      <div style={textEditorContainer}>
-        <div style={textEditorToolbar}>
+      <div style={cssstyles.textEditorContainer}>
+        <div style={cssstyles.textEditorToolbar}>
           <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'BOLD')}>
             <FontAwesomeIcon icon={faBold} />
           </button>
@@ -124,10 +150,12 @@ class TextEditor extends React.Component {
           <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-JUSTIFY')}>
             <FontAwesomeIcon icon={faAlignJustify} />
           </button>
+          <ColorPicker />
         </div>
         <Editor
           ref={(content) => { this.editor = content; }}
           placeholder="Enter some text"
+          customStyleFn={customStyleFn}
           blockStyleFn={blockStyleFn}
           customStyleMap={customStyleMap}
           editorState={editorState}
