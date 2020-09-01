@@ -1,11 +1,18 @@
 import React from 'react';
 import moment from 'moment';
+import reactCSS from 'reactcss';
 import * as BigCalendar from 'react-big-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-console.log(BigCalendar);
+const styles = reactCSS({
+  default: {
+    calendar: {
+      height: '500px',
+    },
+  },
+});
 const localizer = BigCalendar.momentLocalizer(moment);
 
 class CalendarMainView extends React.Component {
@@ -48,7 +55,8 @@ class CalendarMainView extends React.Component {
           selectable
           localizer={localizer}
           events={events}
-          defaultView={BigCalendar.Views.WEEK}
+          style={styles.calendar}
+          defaultView={BigCalendar.Views.MONTH}
           scrollToTime={new Date(1970, 1, 1, 6)}
           defaultDate={new Date()}
           onSelectEvent={(event) => alert(event.title)}
