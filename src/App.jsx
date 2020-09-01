@@ -5,6 +5,8 @@ import dateformat from 'dateformat'; // https://www.npmjs.com/package/dateformat
 import NotesMainView from './view/notes/NotesMainView';
 import BrowserMainView from './view/browser/BrowserMainView';
 import SettingsMainView from './view/settings/SettingsMainView';
+import EmailMainView from './view/email/EmailMainView';
+import CalendarMainView from './view/calendar/CalendarMainView';
 
 const styles = reactCSS({
   default: {
@@ -45,6 +47,12 @@ class Main extends React.Component {
       case 'browser':
         component = <BrowserMainView />;
         break;
+      case 'email':
+        component = <EmailMainView />;
+        break;
+      case 'calendar':
+        component = <CalendarMainView />;
+        break;
       case 'settings':
         component = <SettingsMainView />;
         break;
@@ -56,8 +64,10 @@ class Main extends React.Component {
         <div style={styles.sidebarStyle}>
           <h3>{title}</h3>
           <div style={styles.sidebarMenuStyle}>
-            <button type="button" onClick={() => this.setState({ state: 'notes' })}>Notes</button>
             <button type="button" onClick={() => this.setState({ state: 'browser' })}>Browser</button>
+            <button type="button" onClick={() => this.setState({ state: 'calendar' })}>Calendar</button>
+            <button type="button" onClick={() => this.setState({ state: 'email' })}>Email</button>
+            <button type="button" onClick={() => this.setState({ state: 'notes' })}>Notes</button>
             <hr style={{ width: '100%' }} />
             <button type="button" onClick={() => this.setState({ state: 'settings' })}>Settings</button>
           </div>

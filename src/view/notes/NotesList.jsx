@@ -23,11 +23,13 @@ class NotesList extends React.Component {
   componentDidMount() {
     AppEvent.listen('note.add', this.handleNoteAdd);
     AppEvent.listen('note.update', this.handleNoteAdd);
+    AppEvent.listen('note.delete', this.handleNoteAdd);
   }
 
   componentWillUnmount() {
     AppEvent.remove('note.add', this.handleNoteAdd);
     AppEvent.remove('note.update', this.handleNoteAdd);
+    AppEvent.remove('note.delete', this.handleNoteAdd);
   }
 
   handleNoteAdd = () => {

@@ -29,11 +29,11 @@ const findNoteIndex = (uid) => {
   return -1;
 };
 
-export const noteRemove = (uid) => {
+export const noteDelete = (uid) => {
   const index = findNoteIndex(uid);
   if (index > -1) {
     const data = notesModel.notes.splice(index, 1);
-    new AppEvent('note.remove', data).dispatch();
+    new AppEvent('note.delete', data).dispatch();
     return true;
   }
   return false;

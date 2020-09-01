@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import { noteUpdate } from './NotesModel';
+import { noteUpdate, noteDelete } from './NotesModel';
 import NoteState from './NoteState';
 
 class NoteView extends React.Component {
@@ -20,6 +20,11 @@ class NoteView extends React.Component {
     noteUpdate(uid, note);
   }
 
+  handleDeleteClick = () => {
+    const { uid } = this.state;
+    noteDelete(uid);
+  }
+
   render() {
     const { uid, note } = this.state;
     return (
@@ -30,6 +35,7 @@ class NoteView extends React.Component {
         <button type="button" onClick={this.handleEditClick}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
+        <button type="button" onClick={this.handleDeleteClick}>x</button>
       </div>
     );
   }
