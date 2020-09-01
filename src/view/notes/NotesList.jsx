@@ -1,11 +1,16 @@
 import React from 'react';
+import reactCSS from 'reactcss';
 import { noteGet } from './NotesModel';
 import AppEvent from '../../event';
 import NoteListItem from './NoteListItem';
 
-const notesListStyles = {
-  height: '60vh',
-};
+const styles = reactCSS({
+  default: {
+    notesListStyles: {
+      height: '60vh',
+    },
+  },
+});
 
 class NotesList extends React.Component {
   constructor(props) {
@@ -37,7 +42,7 @@ class NotesList extends React.Component {
       notesList.push(<NoteListItem key={el.id} note={el} />);
     });
     return (
-      <div style={notesListStyles}>
+      <div style={styles.notesListStyles}>
         {notesList}
       </div>
     );

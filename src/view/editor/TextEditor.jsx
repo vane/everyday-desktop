@@ -21,16 +21,18 @@ import ColorPicker from './ColorPicker';
 import AppEvent from '../../event';
 
 const cssstyles = reactCSS({
-  textEditorContainer: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px',
-  },
-  textEditorToolbar: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
+  default: {
+    textEditorContainer: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '20px',
+    },
+    textEditorToolbar: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+    },
   },
 });
 
@@ -71,11 +73,13 @@ class TextEditor extends React.Component {
 
   componentDidMount() {
     this.editor.focus();
-    AppEvent.listen('text.editor.color.change', this.handleTextColorChange);
+    const { uid } = this.props;
+    AppEvent.listen(`text.editor.color.change.${uid}`, this.handleTextColorChange);
   }
 
   componentWillUnmount() {
-    AppEvent.listen('text.editor.color.change', this.handleTextColorChange);
+    const { uid } = this.props;
+    AppEvent.listen(`text.editor.color.change.${uid}`, this.handleTextColorChange);
   }
 
   handleTextColorChange = ({ data }) => {
@@ -117,6 +121,7 @@ class TextEditor extends React.Component {
 
   render() {
     const { editorState } = this.state;
+    const { uid } = this.props;
     return (
       <div style={cssstyles.textEditorContainer}>
         <div style={cssstyles.textEditorToolbar}>
@@ -150,7 +155,7 @@ class TextEditor extends React.Component {
           <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-JUSTIFY')}>
             <FontAwesomeIcon icon={faAlignJustify} />
           </button>
-          <ColorPicker />
+          <ColorPicker uid={uid} />
         </div>
         <Editor
           ref={(content) => { this.editor = content; }}

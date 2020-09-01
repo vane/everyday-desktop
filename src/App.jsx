@@ -1,27 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import reactCSS from 'reactcss';
 import dateformat from 'dateformat'; // https://www.npmjs.com/package/dateformat
 import NotesMainView from './view/notes/NotesMainView';
 import BrowserMainView from './view/browser/BrowserMainView';
 import SettingsMainView from './view/settings/SettingsMainView';
 
-const containerStyle = {
-  display: 'flex',
-};
-
-const sidebarStyle = {
-  width: '150px',
-  backgroundColor: 'red',
-};
-
-const sidebarMenuStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const contentStyle = {
-  flex: '1 0 auto',
-};
+const styles = reactCSS({
+  default: {
+    containerStyle: {
+      display: 'flex',
+    },
+    sidebarStyle: {
+      width: '150px',
+      minWidth: '150px',
+      backgroundColor: 'red',
+    },
+    sidebarMenuStyle: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    contentStyle: {
+      flex: '1 0 auto',
+    },
+  },
+});
 
 class Main extends React.Component {
   constructor(props) {
@@ -49,17 +52,17 @@ class Main extends React.Component {
         break;
     }
     return (
-      <div style={containerStyle}>
-        <div style={sidebarStyle}>
+      <div style={styles.containerStyle}>
+        <div style={styles.sidebarStyle}>
           <h3>{title}</h3>
-          <div style={sidebarMenuStyle}>
+          <div style={styles.sidebarMenuStyle}>
             <button type="button" onClick={() => this.setState({ state: 'notes' })}>Notes</button>
             <button type="button" onClick={() => this.setState({ state: 'browser' })}>Browser</button>
             <hr style={{ width: '100%' }} />
             <button type="button" onClick={() => this.setState({ state: 'settings' })}>Settings</button>
           </div>
         </div>
-        <div style={contentStyle}>
+        <div style={styles.contentStyle}>
           {component}
         </div>
       </div>

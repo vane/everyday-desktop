@@ -28,7 +28,8 @@ class ColorPicker extends React.Component {
 
   handleChange = (color) => {
     this.setState({ color: color.rgb });
-    new AppEvent('text.editor.color.change', color.hex).dispatch();
+    const { uid } = this.props;
+    new AppEvent(`text.editor.color.change.${uid}`, color.hex).dispatch();
   };
 
   render() {

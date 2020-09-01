@@ -41,7 +41,7 @@ class NoteEditView extends React.Component {
   render() {
     const { uid, note } = this.state;
     return (
-      <div key={uid}>
+      <div>
         <div>
           <span>edit</span>
           <span>{uid}</span>
