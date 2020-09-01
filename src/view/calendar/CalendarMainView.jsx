@@ -1,18 +1,59 @@
 import React from 'react';
+import moment from 'moment';
+import * as BigCalendar from 'react-big-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+console.log(BigCalendar);
+const localizer = BigCalendar.momentLocalizer(moment);
 
 class CalendarMainView extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      events: [],
+    };
+  }
+
   handleCalendarClick = () => {
     console.log('calendar click');
   }
 
+  handleSelect = ({ start, end }) => {
+    const { events } = this.state;
+    const title = window.prompt('New Event name');
+    if (title) {
+      this.setState({
+        events: [
+          ...events,
+          {
+            start,
+            end,
+            title,
+          },
+        ],
+      });
+    }
+  }
+
   render() {
+    const { events } = this.state;
     return (
       <div>
         <button type="button" onClick={this.handleCalendarClick}>
           <FontAwesomeIcon icon={faCalendar} />
         </button>
+        <BigCalendar.Calendar
+          selectable
+          localizer={localizer}
+          events={events}
+          defaultView={BigCalendar.Views.WEEK}
+          scrollToTime={new Date(1970, 1, 1, 6)}
+          defaultDate={new Date()}
+          onSelectEvent={(event) => alert(event.title)}
+          onSelectSlot={this.handleSelect}
+        />
       </div>
     );
   }
