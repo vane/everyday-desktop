@@ -59,7 +59,7 @@ const customStyleMap = {
   },
 };
 
-const { styles, customStyleFn } = createStyles(['font-size', 'color', 'text-transform'], 'CUSTOM_', customStyleMap);
+const { styles, customStyleFn } = createStyles(['font-size', 'color'], 'CUSTOM_', customStyleMap);
 
 class TextEditor extends React.Component {
   constructor(props) {
@@ -67,6 +67,8 @@ class TextEditor extends React.Component {
     this.state = {
       color: '#ffffff',
       newColor: null,
+      fontSize: '12px',
+      newFontSize: null,
       editorState: EditorState.createEmpty(),
     };
   }
@@ -107,20 +109,39 @@ class TextEditor extends React.Component {
     this.editor.focus();
   }
 
+  handleFontSizeChange = (e) => {
+    this.setState({ newFontSize: e.target.value, fontSize: e.target.value });
+  }
+
   handleChange = (editorState) => {
-    const { color, newColor } = this.state;
+    const {
+      color,
+      newColor,
+      newFontSize,
+      fontSize,
+    } = this.state;
     let setColor = color;
     let newEditorState = editorState;
     if (newColor !== null) {
-      console.log(color, newColor, styles.color, this.state);
-      newEditorState = styles.color.toggle(editorState, newColor);
+      newEditorState = styles.color.toggle(newEditorState, newColor);
       setColor = newColor;
     }
-    this.setState({ editorState: newEditorState, newColor: null, color: setColor });
+    let setFontSize = fontSize;
+    if (newFontSize !== null) {
+      newEditorState = styles.fontSize.toggle(newEditorState, newFontSize);
+      setFontSize = newFontSize;
+    }
+    this.setState({
+      editorState: newEditorState,
+      newColor: null,
+      color: setColor,
+      newFontSize: null,
+      fontSize: setFontSize,
+    });
   }
 
   render() {
-    const { editorState } = this.state;
+    const { editorState, fontSize } = this.state;
     const { uid } = this.props;
     return (
       <div style={cssstyles.textEditorContainer}>
@@ -155,6 +176,7 @@ class TextEditor extends React.Component {
           <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-JUSTIFY')}>
             <FontAwesomeIcon icon={faAlignJustify} />
           </button>
+          <input type="text" onChange={this.handleFontSizeChange} value={fontSize} />
           <ColorPicker uid={uid} />
         </div>
         <Editor
