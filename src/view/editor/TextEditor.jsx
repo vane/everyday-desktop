@@ -59,6 +59,59 @@ const customStyleMap = {
   },
 };
 
+const styleButtons = [
+  {
+    style: 'BOLD',
+    icon: faBold,
+    event: 'inline',
+  },
+  {
+    style: 'ITALIC',
+    icon: faItalic,
+    event: 'inline',
+  },
+  {
+    style: 'UNDERLINE',
+    icon: faUnderline,
+    event: 'inline',
+  },
+  {
+    style: 'STRIKETHROUGH',
+    icon: faStrikethrough,
+    event: 'inline',
+  },
+  {
+    style: 'ordered-list-item',
+    icon: faListOl,
+    event: 'block',
+  },
+  {
+    style: 'unordered-list-item',
+    icon: faListUl,
+    event: 'block',
+  },
+  {
+    style: 'ALIGN-LEFT',
+    icon: faAlignLeft,
+    event: 'align',
+  },
+  {
+    style: 'ALIGN-CENTER',
+    icon: faAlignCenter,
+    event: 'align',
+  },
+  {
+    style: 'ALIGN-RIGHT',
+    icon: faAlignRight,
+    event: 'align',
+  },
+  {
+    style: 'ALIGN-JUSTIFY',
+    icon: faAlignJustify,
+    event: 'align',
+  },
+];
+
 const { styles, customStyleFn } = createStyles(['font-size', 'color'], 'CUSTOM_', customStyleMap);
 
 class TextEditor extends React.Component {
@@ -102,7 +155,7 @@ class TextEditor extends React.Component {
     this.editor.focus();
   }
 
-  handleAlginStyle = (e, styleName) => {
+  handleAlignStyle = (e, styleName) => {
     e.preventDefault();
     const { editorState } = this.state;
     this.handleChange(RichUtils.toggleBlockType(editorState, styleName));
@@ -143,39 +196,32 @@ class TextEditor extends React.Component {
   render() {
     const { editorState, fontSize } = this.state;
     const { uid } = this.props;
+    const buttons = [];
+    styleButtons.forEach((btn) => {
+      let fn = null;
+      switch (btn.event) {
+        case 'inline':
+          fn = this.handleInlineStyle;
+          break;
+        case 'block':
+          fn = this.handleBlockStyle;
+          break;
+        case 'align':
+          fn = this.handleAlignStyle;
+          break;
+        default:
+          throw new Error(`Not such event type ${btn.event}`);
+      }
+      buttons.push(
+        <button type="button" key={`style_btn_${btn.style}`} onMouseDown={(e) => fn(e, btn.style)}>
+          <FontAwesomeIcon icon={btn.icon} />
+        </button>,
+      );
+    });
     return (
       <div style={cssstyles.textEditorContainer}>
         <div style={cssstyles.textEditorToolbar}>
-          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'BOLD')}>
-            <FontAwesomeIcon icon={faBold} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'ITALIC')}>
-            <FontAwesomeIcon icon={faItalic} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'UNDERLINE')}>
-            <FontAwesomeIcon icon={faUnderline} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleInlineStyle(e, 'STRIKETHROUGH')}>
-            <FontAwesomeIcon icon={faStrikethrough} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleBlockStyle(e, 'ordered-list-item')}>
-            <FontAwesomeIcon icon={faListOl} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleBlockStyle(e, 'unordered-list-item')}>
-            <FontAwesomeIcon icon={faListUl} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-LEFT')}>
-            <FontAwesomeIcon icon={faAlignLeft} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-CENTER')}>
-            <FontAwesomeIcon icon={faAlignCenter} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-RIGHT')}>
-            <FontAwesomeIcon icon={faAlignRight} />
-          </button>
-          <button type="button" onMouseDown={(e) => this.handleAlginStyle(e, 'ALIGN-JUSTIFY')}>
-            <FontAwesomeIcon icon={faAlignJustify} />
-          </button>
+          {buttons}
           <input type="text" onChange={this.handleFontSizeChange} value={fontSize} />
           <ColorPicker uid={uid} />
         </div>
