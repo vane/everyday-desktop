@@ -39,6 +39,7 @@ global.ctrl.openWebsite = (url) => {
     },
   });
   const session = bwindow.webContents.session;
+  session.clearStorageData();
   // load web content extension
   session.loadExtension(path.join(__dirname, './everyday/extension/web-content')).then(() => {
     ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
