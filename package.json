@@ -4,7 +4,7 @@
   "description": "Perun - Organise knowledge",
   "main": "main.js",
   "author": "Michal Szczepanski <michal@vane.pl>",
-  "repository": "https://github.com/vane/everyday-desktop",
+  "repository": "https://github.com/vane/perun",
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "rollup -c",
