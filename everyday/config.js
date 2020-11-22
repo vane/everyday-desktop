@@ -1,2 +1,5 @@
 const { app } = require('electron');
-exports.userData = app.getPath('userData')
+const path = require('path');
+const userData = app.getPath('userData');
+const dbName = 'perun.db';
+exports.dbPath = path.join(userData, dbName);

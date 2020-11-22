@@ -1,7 +1,7 @@
 # js
 node_modules
-build
 dist
+public/build
 package-lock.json
 
 # ide

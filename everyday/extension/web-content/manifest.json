@@ -1,14 +1,23 @@
 {
-  "name": "Everyday",
-  "description": "Everyday web content manipulation",
+  "name": "Perun-web-content",
+  "description": "Perun web content manipulation",
   "version": "0.0.1",
-  "permissions": ["storage", "http://*/*", "https://*/*"],
+  "permissions": [
+    "storage",
+    "http://*/*",
+    "https://*/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["web-content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "web-content.js"
+      ],
       "run_at": "document_start"
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 2,
+  "api": "http://127.0.0.1:36668/67ec4366-02f6-4c0d-9757-7815fb5f2eb4"
 }

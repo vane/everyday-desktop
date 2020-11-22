@@ -1,24 +1,27 @@
 {
-  "name": "everyday-desktop",
-  "version": "0.0.1",
-  "description": "Track my day everyday",
+  "name": "Perun",
+  "version": "0.0.2",
+  "description": "Perun - Organise knowledge",
   "main": "main.js",
-  "author": "Michal Szczepanski <michal@vane.pl>z",
+  "author": "Michal Szczepanski <michal@vane.pl>",
   "repository": "https://github.com/vane/everyday-desktop",
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "electron .",
-    "build": "webpack",
-    "dev": "webpack-dev-server"
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public",
+    "electron.start": "npm run build && electron ./dist/main.js"
   },
   "build": {
-    "productName": "Everyday",
-    "appId": "pl.vane.everyday",
+    "productName": "Perun",
+    "appId": "pl.vane.perun",
     "files": [
       "build",
       "everyday",
+      "public",
       "node_modules/",
       "main.js",
+      "main.preload.js",
       "index.html",
       "package.json"
     ],
@@ -38,7 +41,7 @@
     },
     "mac": {
       "icon": "build/icons/icon.icns",
-      "category": "pl.vane.everyday"
+      "category": "pl.vane.perun"
     },
     "win": {
       "icon": "build/icons/icon.ico"
@@ -52,48 +55,36 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.10.4",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/plugin-transform-react-jsx": "^7.10.4",
-    "@babel/preset-env": "^7.11.0",
-    "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.1.0",
-    "copy-webpack-plugin": "^6.0.3",
-    "css-loader": "^3.6.0",
-    "electron": "^9.1.0",
+    "@rollup/plugin-commonjs": "^14.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.0",
+    "@rollup/plugin-typescript": "^6.0.0",
+    "@tsconfig/svelte": "^1.0.0",
+    "@types/uuid": "^8.3.0",
     "electron-builder": "^22.7.0",
     "eslint": "^7.4.0",
-    "eslint-config-airbnb": "^18.2.0",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.20.3",
-    "less": "^3.11.3",
-    "less-loader": "^6.2.0",
-    "style-loader": "^1.2.1",
-    "update-electron-app": "^1.5.0",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "obj2gltf": "^3.1.0",
+    "rollup": "^2.3.4",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-svelte": "^6.0.0",
+    "rollup-plugin-terser": "^7.0.0",
+    "svelte": "^3.0.0",
+    "svelte-check": "^1.0.0",
+    "svelte-preprocess": "^4.0.0",
+    "tslib": "^2.0.0",
+    "typescript": "^4.0.3",
+    "update-electron-app": "^1.5.0"
   },
   "dependencies": {
-    "@cliqz/adblocker-electron": "^1.17.0",
+    "@cliqz/adblocker-electron": "^1.18.6",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
-    "@fortawesome/react-fontawesome": "^0.1.11",
     "cross-fetch": "^3.0.5",
     "dateformat": "^3.0.3",
-    "draft-js": "^0.11.7",
-    "draft-js-custom-styles": "^2.1.1",
-    "moment": "^2.27.0",
-    "react": "^16.13.1",
-    "react-big-calendar": "^0.27.0",
-    "react-color": "^2.18.1",
-    "react-dom": "^16.13.1",
-    "react-redux": "^7.2.1",
-    "reactcss": "^1.2.3",
-    "redux": "^4.0.5",
+    "electron": "^9.1.0",
+    "get-system-fonts": "^2.0.2",
+    "sirv-cli": "^1.0.0",
     "sqlite3": "^5.0.0",
+    "svelte-spa-router": "^3.0.5",
     "uuid": "^8.3.0"
   }
 }

@@ -1,2 +1,4 @@
-Everyday ( another work in progress )
+Perun ( work in progress )
 ====
+
+Make notes / learn / write / read / organise knowledge
