@@ -1,57 +1,57 @@
-const { app, BrowserWindow, screen, ipcMain } = require('electron');
-const path = require('path');
-const fs = require('fs');
-const url = require('url');
-const uuid = require('uuid');
-const net = require('net');
-const { openWebsite } = require('./everyday/open.website');
-const { dbInitialize, dbSelectAsync, dbModifyAsync } = require('./everyday/db');
-const { logger } = require('./everyday/log');
-const { fileDirOpen } = require('./everyday/file.open');
+const { app, BrowserWindow, screen, ipcMain } = require('electron')
+const path = require('path')
+const fs = require('fs')
+const url = require('url')
+const uuid = require('uuid')
+const net = require('net')
+const { openWebsite } = require('./perun/open.website')
+const { dbInitialize, dbSelectAsync, dbModifyAsync } = require('./perun/db')
+const { logger } = require('./perun/log')
+const { fileDirOpen } = require('./perun/file.open')
 
 
 /* Web-Content Extension */
-const apiUid = uuid.v4();
+const apiUid = uuid.v4()
 const apiHost = '127.0.0.1'
-let apiUrl = null;
-let apiPort = null;
+let apiUrl = null
+let apiPort = null
 
 const checkPortIsFree = async (port) => {
   return new Promise((resolve, reject) => {
-    const server = net.createServer();
+    const server = net.createServer()
     server.once('error', (err) => {
       if (err.code === 'EADDRINUSE') {
         logger.warn(`PORT ${port} in use`)
-        resolve(true);
+        resolve(true)
       }
-    });
+    })
     server.once('listening', () => {
       // close the server if listening doesn't fail
-      server.close();
-      resolve(false);
-    });
-    server.listen(port);
-  });
+      server.close()
+      resolve(false)
+    })
+    server.listen(port)
+  })
 }
 const newApiPort = async () => {
-  const max = 36900;
-  const min = 36666;
-  let port = null;
-  let assigned = true;
+  const max = 36900
+  const min = 36666
+  let port = null
+  let assigned = true
   while (assigned) {
-    port = Math.floor(Math.random() * (max - min) + min);
-    assigned = false;// await checkPortIsFree(port);
-    logger.log(assigned);
+    port = Math.floor(Math.random() * (max - min) + min)
+    assigned = false// await checkPortIsFree(port);
+    logger.log(assigned)
   }
-  apiPort = port;
-  apiUrl = `http://${apiHost}:${apiPort}/${apiUid}`;
-};
+  apiPort = port
+  apiUrl = `http://${apiHost}:${apiPort}/${apiUid}`
+}
 const setContentApi = () => {
-  const manifestPath = path.join(__dirname, './everyday/extension/web-content/manifest.json');
-  const manifest = JSON.parse(fs.readFileSync(manifestPath));
-  manifest.api = apiUrl;
+  const manifestPath = path.join(__dirname, './perun/extension/web-content/manifest.json')
+  const manifest = JSON.parse(fs.readFileSync(manifestPath))
+  manifest.api = apiUrl
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, '  '))
-};
+}
 
 //-------------------
 // IPC
@@ -67,16 +67,16 @@ const setContentApi = () => {
 
 class IpcResponse {
   constructor(seq, status, data) {
-    this.seq = seq;
-    this.status = status;
-    this.data = data;
+    this.seq = seq
+    this.status = status
+    this.data = data
   }
 }
 
 ipcMain.on('perun-request', async (event, arg) => {
-  logger.log(event, arg);
-  let status = 200;
-  let data = null;
+  logger.log(event, arg)
+  let status = 200
+  let data = null
   switch(arg.name) {
     /*case 'open.file': {
       try {
@@ -88,25 +88,25 @@ ipcMain.on('perun-request', async (event, arg) => {
       break;
     }*/
     case 'open.website': {
-      openWebsite(arg.data);
-      break;
+      openWebsite(arg.data)
+      break
     }
     case 'workspace.all': {
-      data = await dbSelectAsync(`SELECT * from workspace`);
-      break;
+      data = await dbSelectAsync('SELECT * from workspace')
+      break
     }
     case 'workspace.add': {
-      await fileDirOpen();
+      await fileDirOpen()
       // data = await dbModifyAsync(`INSERT INTO workspace path * from workspace`);
-      break;
+      break
     }
     default: {
-      logger.warn('not implemented !');
+      logger.warn('not implemented !')
     }
   }
    // Event emitter for sending asynchronous messages
    event.sender.send('perun-reply', new IpcResponse(arg.seq, status, data))
-});
+})
 
 //-------------------
 // Main Window
@@ -114,16 +114,16 @@ ipcMain.on('perun-request', async (event, arg) => {
 
 const launchMain = async () => {
   try {
-    const firstStart = await dbInitialize();
-    await newApiPort();
-    setContentApi(false);
-    startServer();
+    const firstStart = await dbInitialize()
+    await newApiPort()
+    setContentApi(false)
+    startServer()
   } catch (e) {
-    logger.error(e);
-    app.quit();
+    logger.error(e)
+    app.quit()
   }
   // Create the browser window.
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize
   global.mainWindow = new BrowserWindow({
     x: 0,
     y: 0,
@@ -139,52 +139,52 @@ const launchMain = async () => {
       pathname: path.join(__dirname, 'public/index.html'),
       protocol: 'file:',
       slashes: true
-  }));
+  }))
 }
 
 app.whenReady().then(launchMain)
 
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
   //if (process.platform !== "darwin") {
-    app.quit();
+    app.quit()
   //}
-});
+})
 // clean api url
 app.on('before-quit', async () => {
-  logger.debug('before quit data');
+  logger.debug('before quit data')
 })
 
 /* API Server */
 const readRequestBody = (req) => {
-  let body = '';
+  let body = ''
   return new Promise((resolve, reject) => {
     req.on('data', function (chunk) {
-      body += chunk;
-    });
+      body += chunk
+    })
     req.on('end', () => {
-      resolve(body);
-    });
-  });
+      resolve(body)
+    })
+  })
 }
 const startServer = () => {
-  const http = require('http');
+  const http = require('http')
   const server = http.createServer(async (req, res) => {
     if (req.url === `/${apiUid}`) {
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      const body = await readRequestBody(req);
-      logger.log(body);
-      const b = JSON.parse(body);
-      b.msg = 'Hello world !';
-      res.end(JSON.stringify(b));
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      const body = await readRequestBody(req)
+      logger.log(body)
+      const b = JSON.parse(body)
+      b.msg = 'Hello world !'
+      res.end(JSON.stringify(b))
     } else {
-      req.statusCode = 404;
-      res.end();
+      req.statusCode = 404
+      res.end()
     }
-  });
+  })
 
   server.listen(apiPort, apiHost, () => {
-    logger.log(`Server running at http://${apiHost}:${apiPort}/`);
-  });
-};
+    logger.log(`Server running at http://${apiHost}:${apiPort}/`)
+  })
+}

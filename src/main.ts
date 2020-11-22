@@ -1,9 +1,10 @@
 import App from './App.svelte'
 import {push} from 'svelte-spa-router'
+import {workspaceStore} from './app.store'
 
 // console.log(window.perun.openWebsite('https://duck.com'));
-window.perun.workspaceAll((msg) => {
-	if (msg.data.length === 0) {
+workspaceStore.getAll().then((data: []) => {
+	if (data.length === 0) {
 		push('/settings')
 	}
 })

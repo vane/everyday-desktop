@@ -1,18 +1,18 @@
-const { BrowserWindow, screen } = require('electron');
-const path = require('path');
-const fetch = require('cross-fetch'); // required 'fetch'
-const { ElectronBlocker } = require('@cliqz/adblocker-electron');
+const { BrowserWindow, screen } = require('electron')
+const path = require('path')
+const fetch = require('cross-fetch') // required 'fetch'
+const { ElectronBlocker } = require('@cliqz/adblocker-electron')
 const { logger } = require('./log')
 
 
 const openWebsite = (url) => {
-  logger.log(`open website ${url}`);
+  logger.log(`open website ${url}`)
   if(!url.startsWith('http') && !url.startsWith('file://')) {
-    url = `http://${url}`;
+    url = `http://${url}`
   }
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize
 
-  const b = global.mainWindow.getBounds();
+  const b = global.mainWindow.getBounds()
   const bwindow = new BrowserWindow({
     parent: global.mainWindow,
     x: 0,
@@ -26,25 +26,25 @@ const openWebsite = (url) => {
       contextIsolation: true,
       preload: path.join(__dirname, 'website.preload.js')
     },
-  });
+  })
   // clear session storage each time
-  const session = bwindow.webContents.session;
-  session.clearStorageData();
+  const session = bwindow.webContents.session
+  session.clearStorageData()
 
   // load web content extension
   session.loadExtension(path.join(__dirname, './extension/web-content')).then((ext) => {
-    logger.log(ext.manifest);
+    logger.log(ext.manifest)
     // Load ads tracking extension
     ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-      blocker.enableBlockingInSession(session);
-    });
+      blocker.enableBlockingInSession(session)
+    })
     /*session.webRequest.onBeforeRequest({urls:['<all_urls>']}, (details, callback) => {
       logger.log(details);
       callback({cancel: false});
     });*/
 
     // Load data web page
-    bwindow.loadURL(url);
+    bwindow.loadURL(url)
     /*bwindow.once('did-finish-load', (e) => {
        logger.log('loaded', e);
     });
@@ -55,8 +55,8 @@ const openWebsite = (url) => {
       });
     })*/
   }).catch((e) => {
-    logger.error(e);
-  });
+    logger.error(e)
+  })
 }
 
 exports.openWebsite = openWebsite

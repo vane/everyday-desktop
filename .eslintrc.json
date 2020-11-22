@@ -1,0 +1,33 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "chrome": true,
+    "perun": "readonly"
+  },
+  "rules": {
+    "semi": "off",
+    "@typescript-eslint/semi": ["error", "never"],
+    "quotes": "off",
+    "@typescript-eslint/quotes": ["error", "single"]
+  },
+  "overrides": [
+    {
+      "files": ["*.js"], // Or *.test.js
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ]
+}

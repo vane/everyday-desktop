@@ -10,6 +10,7 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public",
+    "lint": "eslint . --ext .ts,.js",
     "electron.start": "npm run build && electron ./dist/main.js"
   },
   "build": {
@@ -17,7 +18,7 @@
     "appId": "pl.vane.perun",
     "files": [
       "build",
-      "everyday",
+      "perun",
       "public",
       "node_modules/",
       "main.js",
@@ -60,8 +61,10 @@
     "@rollup/plugin-typescript": "^6.0.0",
     "@tsconfig/svelte": "^1.0.0",
     "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
     "electron-builder": "^22.7.0",
-    "eslint": "^7.4.0",
+    "eslint": "^7.14.0",
     "obj2gltf": "^3.1.0",
     "rollup": "^2.3.4",
     "rollup-plugin-livereload": "^2.0.0",

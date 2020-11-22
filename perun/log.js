@@ -1,18 +1,18 @@
 
 const logDebug = (...args) => {
-  console.debug(...args);
+  console.debug(...args)
 }
 
 const logLog = (...args) => {
-  console.log(...args);
+  console.log(...args)
 }
 
 const logWarn = (...args) => {
-  console.warn(...args);
+  console.warn(...args)
 }
 
 const logError = (...args) => {
-  console.error(...args);
+  console.error(...args)
 }
 
 exports.logger = {
