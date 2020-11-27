@@ -19,10 +19,22 @@ const fileOpen = (fileNames) => {
   })
 }
 
-const fileDirOpen = () => {
+const fileDirOpen = (data) => {
   return new Promise((resolve, reject) => {
-    dialog.showOpenDialog().then(fileNames => {
-      console.log(fileNames)
+    if (!data) data = {}
+    const props = {
+      title: data.title || 'Select directory',
+      properties: ['openDirectory']
+    }
+    dialog.showOpenDialog(props).then(fileNames => {
+      if (fileNames.canceled) {
+        throw new Error('No directory selected')
+      } else {
+        const fpath = fileNames.filePaths[0]
+        resolve(fpath)
+      }
+    }).catch((err) => {
+      reject(err)
     })
   })
 }

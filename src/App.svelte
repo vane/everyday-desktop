@@ -19,9 +19,7 @@
 	})
 </script>
 <div class="app-main">
-	<div>
-		<Menu />
-	</div>
+	<Menu />
 	<div class="app-content">
 		<Router {routes} />
 	</div>
@@ -33,11 +31,13 @@
 		margin: 0;
 		color: #000000;
 		background-color: #f3f3f3;
+		height: 100%;
+		width: 100%;
 	}
 
 	.app-main {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		flex-grow: 1;
 		height: 100%;
 	}
@@ -45,6 +45,7 @@
 	.app-content {
 		display: flex;
 		height: 100%;
-		margin-left: 150px;
+		width: 100%;
+		flex-grow: 1;
 	}
 </style>

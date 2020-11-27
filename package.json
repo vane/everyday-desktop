@@ -87,6 +87,7 @@
     "get-system-fonts": "^2.0.2",
     "sirv-cli": "^1.0.0",
     "sqlite3": "^5.0.0",
+    "svelte-fa": "^2.1.1",
     "svelte-spa-router": "^3.0.5",
     "uuid": "^8.3.0"
   }

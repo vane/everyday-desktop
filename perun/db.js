@@ -11,9 +11,12 @@ const db = new sqlite3.Database(dbPath)
  */
 const dbRunAsync = (db, stmt) => {
   return new Promise((resolve, reject) => {
-    db.run(stmt, (err, res) => {
+    db.run(stmt, function(err, res) {
       if (err) reject(err)
-      resolve(res)
+      resolve({
+        changes: this.changes,
+        lastID: this.lastID
+      })
     })
   })
 }
@@ -65,7 +68,7 @@ const migrateDatabase = async (db) => {
         await mod.down(db)
         throw e
       }
-      await dbRunAsync(`INSERT INTO migration (file_name) VALUES ("${fpath}")`)
+      await dbRunAsync(db,`INSERT INTO migration (file_name) VALUES ("${fpath}")`)
     }
   } catch (e) {
     logger.error(e)

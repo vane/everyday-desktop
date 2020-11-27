@@ -10,7 +10,9 @@ const runAsync = (db, stmt) => {
 const up = async (db) => {
   await runAsync(db, `CREATE TABLE workspace (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      path TEXT   
+      name TEXT,
+      path TEXT,
+      status INTEGER DEFAULT 0,    
     )`)
   await runAsync(db, `
   CREATE TABLE note ( 

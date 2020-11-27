@@ -1,16 +1,42 @@
 import {writable} from 'svelte/store'
 
+enum WorkspaceStatus {
+  Inactive,
+  Active
+}
 
-const getAllWorkspaces = (): Promise<[]> => {
+interface WorkspaceVO {
+  id: number,
+  name: string,
+  path: string,
+  status: number
+}
+
+interface WorkspaceData {
+  selected?: WorkspaceVO,
+  list: WorkspaceVO[],
+}
+
+const getAllWorkspaces = (): Promise<WorkspaceVO[]> => {
   return new Promise((resolve) => {
-    window.perun.workspaceAll((msg) => {
+    window.perun.workspaceList((msg) => {
       resolve(msg.data)
     })
   })
 }
 
+const findFirstStatus = (list:WorkspaceVO[], status: number): WorkspaceVO => {
+  for (const el of list) {
+    if (el.status === status) return el
+  }
+  return null
+}
+
 export const workspaceStore = (() => {
-  const store = writable([])
+  const store = writable<WorkspaceData>({
+    list: [],
+    selected: null,
+  })
   const initialised = false
   let storeData = null
   return {
@@ -18,12 +44,13 @@ export const workspaceStore = (() => {
     getAll: async () => {
       if (!initialised) {
         storeData = await getAllWorkspaces()
-        store.set(storeData)
+        const selected = findFirstStatus(storeData, WorkspaceStatus.Active)
+        store.set({
+          list: storeData,
+          selected: selected,
+        })
       }
       return storeData
     },
-    size: () => {
-      return store
-    }
   }
 })()

@@ -1,6 +1,7 @@
 const { app, BrowserWindow, screen, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
+const util = require('util')
 const url = require('url')
 const uuid = require('uuid')
 const net = require('net')
@@ -73,31 +74,119 @@ class IpcResponse {
   }
 }
 
-ipcMain.on('perun-request', async (event, arg) => {
-  logger.log(event, arg)
+ipcMain.on('perun-request', async (event, msg) => {
+  logger.log(event, msg)
   let status = 200
   let data = null
-  switch(arg.name) {
-    /*case 'open.file': {
-      try {
-        data = await openFile(arg.data);
-      } catch (e) {
-        status = 400;
-        data = e;
-      }
-      break;
-    }*/
+  switch(msg.name) {
     case 'open.website': {
-      openWebsite(arg.data)
+      openWebsite(msg.data)
       break
     }
-    case 'workspace.all': {
+    case 'workspace.list': {
       data = await dbSelectAsync('SELECT * from workspace')
       break
     }
-    case 'workspace.add': {
-      await fileDirOpen()
-      // data = await dbModifyAsync(`INSERT INTO workspace path * from workspace`);
+    case 'workspace.dir.select': {
+      try {
+        const selectedDir = await fileDirOpen()
+        let workspaceName = msg.data.workspaceName
+        if (!workspaceName) {
+          const a = selectedDir.split('/')
+          workspaceName = a[a.length - 1]
+        }
+        const result = await dbModifyAsync(`
+        INSERT INTO workspace (name, path, status) 
+          VALUES ('${workspaceName}', '${selectedDir}', 1)
+        `)
+        // Update all other workspaces as not selected
+        await dbModifyAsync(`
+        UPDATE workspace 
+          SET status = 0 
+        WHERE status = 1 AND id != ${result.lastID}
+        `)
+        data = {
+          id: result.lastID,
+          name: workspaceName,
+          path: selectedDir,
+          status: 1,
+        }
+      } catch (e) {
+        status = 400
+        data = e.message
+      }
+      break
+    }
+    case 'workspace.dir.list': {
+      const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
+      if (result.length === 0) {
+        status = 400
+        data = 'Workspace not found'
+        break
+      }
+      const workspace = result[0]
+      const readdir = util.promisify(fs.readdir)
+      const stat = util.promisify(fs.stat)
+
+      // Let's trim this cause user can go to other dir using /../../
+      let basepath = '/'+msg.data.path.replace(new RegExp('^[/..]+'), '')
+      const readpath = `${workspace.path}${basepath}`
+
+      const fdata = await readdir(readpath)
+      const files = []
+      for (const f of fdata) {
+        const fstat = await stat(`${readpath}/${f}`)
+        files.push({
+          name: f,
+          isDir: fstat.isDirectory(),
+          size: fstat.size,
+        })
+      }
+      data = {
+        path: basepath,
+        files: files,
+      }
+      break
+    }
+    case 'workspace.file.read': {
+      const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
+      if (result.length === 0) {
+        status = 400
+        data = 'Workspace not found'
+        break
+      }
+      const workspace = result[0]
+      const readfile = util.promisify(fs.readFile)
+      let basepath = msg.data.path.replace(new RegExp('^[/..]+'), '')
+      const readpath = `${workspace.path}/${basepath}`
+      const fdata = await readfile(readpath)
+      data = {
+        path: basepath,
+        ext: path.extname(readpath),
+        data: fdata,
+      }
+      break
+    }
+    case 'workspace.file.write': {
+      const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
+      if (result.length === 0) {
+        status = 400
+        data = 'Workspace not found'
+        break
+      }
+      const workspace = result[0]
+      const writefile = util.promisify(fs.writeFile)
+      let basepath = msg.data.path.replace(new RegExp('^[/..]+'), '')
+      const writepath = `${workspace.path}/${basepath}`
+      try {
+        await writefile(writepath, msg.data.data)
+      } catch (e) {
+        status = 400
+        data = e.message
+      }
+      break
+    }
+    case 'workspace.file.discard': {
       break
     }
     default: {
@@ -105,7 +194,7 @@ ipcMain.on('perun-request', async (event, arg) => {
     }
   }
    // Event emitter for sending asynchronous messages
-   event.sender.send('perun-reply', new IpcResponse(arg.seq, status, data))
+   event.sender.send('perun-reply', new IpcResponse(msg.seq, status, data))
 })
 
 //-------------------
