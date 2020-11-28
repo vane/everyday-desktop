@@ -12,7 +12,7 @@ const up = async (db) => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
       path TEXT,
-      status INTEGER DEFAULT 0,    
+      status INTEGER DEFAULT 0    
     )`)
   await runAsync(db, `
   CREATE TABLE note ( 
@@ -41,6 +41,11 @@ const up = async (db) => {
     workspace_id INTEGER,
     PRIMARY KEY (tag_id, asset_id)         
   )`)
+  await runAsync(db, `
+  CREATE TABLE settings (
+    key TEXT PRIMARY KEY,
+    value TEXT  
+  )`)
 }
 
 const down = async (db) => {
@@ -49,6 +54,7 @@ const down = async (db) => {
   await runAsync(db, 'DROP table if exists asset')
   await runAsync(db, 'DROP table if exists tag')
   await runAsync(db, 'DROP table if exists tag_element')
+  await runAsync(db, 'DROP table if exists settings')
 }
 
 exports.up = up

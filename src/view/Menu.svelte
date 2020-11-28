@@ -1,28 +1,20 @@
 <script lang="ts">
-  import Fa from 'svelte-fa'
-  import {faCog, faHome} from '@fortawesome/free-solid-svg-icons'
-  import {link} from 'svelte-spa-router'
   import WorkspaceSelect from './workspace/WorkspaceSelect.svelte'
   import TimeDisplay from './menu/TimeDisplay.svelte'
   import FileExplorer from './FileExplorer.svelte'
 </script>
 <div class="menu-nav">
+  <div style="text-align: center;padding-top:10px;">
+    <span style="font-size: 1.7em;">Perun</span>
+  </div>
   <div>
     <TimeDisplay />
-    <WorkspaceSelect />
-    <div class="menu-link">
-      <a href="/" use:link>
-        <Fa icon={faHome} />
-      </a>
+    <div style="padding-bottom: 20px;">
+      <WorkspaceSelect />
     </div>
-    <div style="text-align: center;">
+    <div style="display: flex;justify-content: center;width: 100%;">
       <FileExplorer />
     </div>
-  </div>
-  <div class="menu-link">
-    <a href="/settings" use:link>
-      <Fa icon={faCog} />
-    </a>
   </div>
 </div>
 <style>
@@ -33,11 +25,5 @@
     color: #000000;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-  }
-  .menu-link {
-    font-size: 1em;
-    text-align: center;
-    padding: 10px;
   }
 </style>

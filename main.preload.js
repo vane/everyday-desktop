@@ -22,9 +22,21 @@ contextBridge.exposeInMainWorld('perun', {
     ipcRenderer.send('perun-request', req)
     seq += 1
   },
-  workspaceDirSelect: (data, callback) => {
+  workspaceActivate: (callback) => {
     resp_map[seq] = callback
-    const req = new IpcRequest(seq, 'workspace.dir.select', data)
+    const req = new IpcRequest(seq, 'workspace.activate', null)
+    ipcRenderer.send('perun-request', req)
+    seq += 1
+  },
+  workspaceAdd: (data, callback) => {
+    resp_map[seq] = callback
+    const req = new IpcRequest(seq, 'workspace.add', data)
+    ipcRenderer.send('perun-request', req)
+    seq += 1
+  },
+  workspaceRemove: (data, callback) => {
+    resp_map[seq] = callback
+    const req = new IpcRequest(seq, 'workspace.remove', data)
     ipcRenderer.send('perun-request', req)
     seq += 1
   },
@@ -49,6 +61,19 @@ contextBridge.exposeInMainWorld('perun', {
   workspaceFileDiscard: (data, callback) => {
     resp_map[seq] = callback
     const req = new IpcRequest(seq, 'workspace.file.discard', data)
+    ipcRenderer.send('perun-request', req)
+    seq += 1
+  },
+  /* Settings */
+  settingsGet: (data, callback) => {
+    resp_map[seq] = callback
+    const req = new IpcRequest(seq, 'settings.get', data)
+    ipcRenderer.send('perun-request', req)
+    seq += 1
+  },
+  settingsSet: (data, callback) => {
+    resp_map[seq] = callback
+    const req = new IpcRequest(seq, 'settings.set', data)
     ipcRenderer.send('perun-request', req)
     seq += 1
   }

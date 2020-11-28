@@ -17,9 +17,16 @@
 		// Measure pixels per inch
 		console.log('Initialized')
 	})
+
+	const handleResizeDown = () => {
+		console.log('Resize', e)
+	}
 </script>
 <div class="app-main">
 	<Menu />
+	<div
+		style="width: 4px;height: 100vh;background-color: #000000;cursor: col-resize;"
+		on:mousedown={handleResizeDown}></div>
 	<div class="app-content">
 		<Router {routes} />
 	</div>

@@ -87,7 +87,20 @@ ipcMain.on('perun-request', async (event, msg) => {
       data = await dbSelectAsync('SELECT * from workspace')
       break
     }
-    case 'workspace.dir.select': {
+    case 'workspace.activate': {
+      await dbModifyAsync(`
+        UPDATE workspace 
+          SET status = 1 
+        WHERE id = ${msg.data.workspaceId}
+      `)
+      await dbModifyAsync(`
+        UPDATE workspace 
+          SET status = 0 
+        WHERE status = 1 AND id != ${msg.data.workspaceId}
+      `)
+      break
+    }
+    case 'workspace.add': {
       try {
         const selectedDir = await fileDirOpen()
         let workspaceName = msg.data.workspaceName
@@ -115,6 +128,9 @@ ipcMain.on('perun-request', async (event, msg) => {
         status = 400
         data = e.message
       }
+      break
+    }
+    case 'workspace.remove': {
       break
     }
     case 'workspace.dir.list': {
@@ -148,25 +164,7 @@ ipcMain.on('perun-request', async (event, msg) => {
       }
       break
     }
-    case 'workspace.file.read': {
-      const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
-      if (result.length === 0) {
-        status = 400
-        data = 'Workspace not found'
-        break
-      }
-      const workspace = result[0]
-      const readfile = util.promisify(fs.readFile)
-      let basepath = msg.data.path.replace(new RegExp('^[/..]+'), '')
-      const readpath = `${workspace.path}/${basepath}`
-      const fdata = await readfile(readpath)
-      data = {
-        path: basepath,
-        ext: path.extname(readpath),
-        data: fdata,
-      }
-      break
-    }
+    case 'workspace.file.read':
     case 'workspace.file.write': {
       const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
       if (result.length === 0) {
@@ -175,18 +173,47 @@ ipcMain.on('perun-request', async (event, msg) => {
         break
       }
       const workspace = result[0]
-      const writefile = util.promisify(fs.writeFile)
       let basepath = msg.data.path.replace(new RegExp('^[/..]+'), '')
-      const writepath = `${workspace.path}/${basepath}`
-      try {
-        await writefile(writepath, msg.data.data)
-      } catch (e) {
-        status = 400
-        data = e.message
+      const fpath = `${workspace.path}/${basepath}`
+      if (msg.name === 'workspace.file.write') {
+        try {
+          const writefile = util.promisify(fs.writeFile)
+          await writefile(fpath, msg.data.data)
+        } catch (e) {
+          status = 400
+          data = e.message
+        }
+      } else {
+        const readfile = util.promisify(fs.readFile)
+        const fdata = await readfile(fpath)
+        data = {
+          path: basepath,
+          ext: path.extname(fpath),
+          data: fdata,
+        }
       }
       break
     }
     case 'workspace.file.discard': {
+      break
+    }
+    case 'settings.set':
+    case 'settings.get': {
+      data = await dbSelectAsync(`
+        SELECT * FROM settings WHERE key = '${msg.data.key}'
+      `)
+      data = data[0]
+      if (msg.name === 'settings.set') {
+        if (data) {
+          await dbModifyAsync(`
+            UPDATE settings SET value = '${msg.data.value}' WHERE key = '${msg.data.key}'
+          `)
+        } else {
+          await dbModifyAsync(`
+            INSERT INTO settings (key, value) VALUES ('${msg.data.key}', '${msg.data.value}')
+          `)
+        }
+      }
       break
     }
     default: {

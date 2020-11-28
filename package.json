@@ -1,7 +1,7 @@
 {
-  "name": "Perun",
+  "name": "pl.vane.perun.Perun",
   "version": "0.0.2",
-  "description": "Perun - Organise knowledge",
+  "description": "Perun",
   "main": "main.js",
   "author": "Michal Szczepanski <michal@vane.pl>",
   "repository": "https://github.com/vane/perun",
@@ -17,7 +17,6 @@
     "productName": "Perun",
     "appId": "pl.vane.perun",
     "files": [
-      "build",
       "perun",
       "public",
       "node_modules/",
@@ -41,15 +40,15 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns",
+      "icon": "public/build/icons/icon.icns",
       "category": "pl.vane.perun"
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "public/build/icons/icon.ico"
     },
     "linux": {
-      "icon": "build/icons",
-      "category": "Development",
+      "icon": "public/build/icons",
+      "category": "Productivity",
       "target": [
         "AppImage"
       ]
@@ -60,13 +59,16 @@
     "@rollup/plugin-node-resolve": "^8.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@tsconfig/svelte": "^1.0.0",
+    "@types/marked": "^1.2.0",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
+    "electron": "^9.1.0",
     "electron-builder": "^22.7.0",
     "eslint": "^7.14.0",
     "obj2gltf": "^3.1.0",
     "rollup": "^2.3.4",
+    "rollup-plugin-css-only": "^3.0.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^6.0.0",
     "rollup-plugin-terser": "^7.0.0",
@@ -81,10 +83,11 @@
     "@cliqz/adblocker-electron": "^1.18.6",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@yaireo/tagify": "^3.21.5",
     "cross-fetch": "^3.0.5",
     "dateformat": "^3.0.3",
-    "electron": "^9.1.0",
     "get-system-fonts": "^2.0.2",
+    "marked": "^1.2.5",
     "sirv-cli": "^1.0.0",
     "sqlite3": "^5.0.0",
     "svelte-fa": "^2.1.1",

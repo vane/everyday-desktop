@@ -1,9 +1,15 @@
 <script lang="ts">
   import {onMount} from 'svelte'
+  import {settingsGet, SettingsKey, settingsSet} from '../../api/settings.api'
 
   enum TimeState {
-    Basic = 1,
-    Advanced,
+    Basic = 'BASIC',
+    Advanced = 'ADVANCED'
+  }
+
+  const timeStateFromValue = (value: string): TimeState => {
+    if (value === 'BASIC') return TimeState.Basic
+    return TimeState.Advanced
   }
 
   let timeString = ''
@@ -52,22 +58,39 @@
     setTimeout(tick, 500)
   }
 
-  const handleMouseClick = () => {
+  const changeTimeState = (state: TimeState) => {
     if (timeState === TimeState.Basic) {
-      timeState = TimeState.Advanced
-      dateStringStyleCurrent = dateStringStyleOver
-      timeStringStyleCurrent = timeStringStyleOver
-      buttonStyleCurrent = buttonStyleOver
-    } else {
-      timeState = TimeState.Basic
       dateStringStyleCurrent = dateStringStyle
       timeStringStyleCurrent = timeStringStyle
       buttonStyleCurrent = timeStringStyle
+    } else {
+      dateStringStyleCurrent = dateStringStyleOver
+      timeStringStyleCurrent = timeStringStyleOver
+      buttonStyleCurrent = buttonStyleOver
     }
-
   }
 
-  onMount(() => {
+  const handleMouseClick = async () => {
+    if (timeState === TimeState.Basic) {
+      timeState = TimeState.Advanced
+    } else {
+      timeState = TimeState.Basic
+
+    }
+    changeTimeState(timeState)
+    await settingsSet(SettingsKey.TIME_DISPLAY, String(timeState))
+  }
+
+  onMount(async () => {
+    // Read time display settings
+    const dbState = await settingsGet(SettingsKey.TIME_DISPLAY)
+    if (!dbState) {
+      const toSave = String(timeState)
+      await settingsSet(SettingsKey.TIME_DISPLAY, toSave)
+    } else {
+      timeState = timeStateFromValue(dbState.value)
+      changeTimeState(timeState)
+    }
     setTimeout(tick, 500)
   })
 </script>

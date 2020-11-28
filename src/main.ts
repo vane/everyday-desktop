@@ -5,6 +5,7 @@ import {workspaceStore} from './app.store'
 // console.log(window.perun.openWebsite('https://duck.com'));
 workspaceStore.getAll().then((data: []) => {
 	if (data.length === 0) {
+		console.log(window.location)
 		push('/settings')
 	}
 })

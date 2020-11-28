@@ -1,4 +1,5 @@
 import svelte from 'rollup-plugin-svelte'
+import css from 'rollup-plugin-css-only'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import livereload from 'rollup-plugin-livereload'
@@ -38,6 +39,7 @@ export default {
 		dir: 'public/build/'
 	},
 	plugins: [
+		css({ output: 'vendor.css' }),
 		svelte({
 			// enable run-time checks when not in production
 			dev: !production,

@@ -1,19 +1,16 @@
 <script lang="ts">
   import Fa from 'svelte-fa'
-  import {faPlus} from '@fortawesome/free-solid-svg-icons'
-
-  const handleAddClick = () => {
-    alert('add')
-  }
+  import {link} from 'svelte-spa-router'
+  import {faCog} from '@fortawesome/free-solid-svg-icons'
 </script>
 <div class="topbar-main">
-  <div class="topbar-logo">
-    <h1>Perun</h1>
+  <div style="width: 100%;height: 100%;display: flex;padding-left: 20px;">
+    <input style="width: 100%;align-self: center; font-size: 1.4em;" placeholder="Search">
   </div>
   <div class="topbar-logo-right">
-    <button on:click={handleAddClick} class="topbar-add-btn" >
-      <Fa icon={faPlus} />
-    </button>
+    <a href="/settings" use:link class="topbar-settings-btn">
+      <Fa icon={faCog} />
+    </a>
   </div>
 </div>
 <style>
@@ -31,12 +28,12 @@
   }
 
   .topbar-logo-right {
-      width: 100%;
+      padding-left: 20px;
       align-self: center;
       display: flex;
       flex-direction: column;
   }
-  .topbar-add-btn {
+  .topbar-settings-btn {
       align-self: flex-end;
       margin-right: 50px;
   }
