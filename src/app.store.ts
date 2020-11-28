@@ -1,5 +1,6 @@
 import {writable} from 'svelte/store'
 
+/* Workspace */
 enum WorkspaceStatus {
   Inactive,
   Active
@@ -70,3 +71,6 @@ export const workspaceStore = (() => {
     }
   }
 })()
+
+/* Menu width */
+export const menuWidthStore = writable<number>(150)

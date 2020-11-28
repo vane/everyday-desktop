@@ -12,4 +12,6 @@ Make notes / learn / write / read / organise knowledge
 - [svelte-spa-router](https://www.npmjs.com/package/svelte-spa-router)  
 - [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules)  
 - [svelte-fa](https://cweili.github.io/svelte-fa/)
-- [fontawesome](https://fontawesome.com/icons?d=gallery&q=plus)  
+- [fontawesome](https://fontawesome.com/icons?d=gallery&q=plus)
+- [tagify](https://yaireo.github.io/tagify/)
+- [markedjs](https://marked.js.org/)  
