@@ -8,7 +8,7 @@
   onMount(() => {
     const inputElm = document.querySelector('#tag_input')
     const tags = new Tagify(inputElm)
-    console.log(tags)
+    // console.log(tags)
   })
 </script>
 <div class="w-100">

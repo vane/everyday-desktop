@@ -88,8 +88,8 @@
   }*/
 
   workspaceStore.subscribe((data) => {
-    console.log(data)
     if (data.selected) {
+      currentPath = '/'
       handleListDir()
     }
   })

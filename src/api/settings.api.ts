@@ -13,7 +13,7 @@ export const settingsGet = async (key: string): Promise<SettingsVO|undefined> =>
     window.perun.settingsGet({
       key: key,
     }, (msg) => {
-      console.log('SETTINGS.GET', msg)
+      // console.log('SETTINGS.GET', msg)
       resolve(msg.data)
     })
   })
@@ -25,7 +25,7 @@ export const settingsSet = async (key, value): Promise<void> => {
       key: key,
       value: value,
     }, (msg) => {
-      console.log('SETTINGS.SET', msg)
+      // console.log('SETTINGS.SET', msg)
       resolve(msg.data)
     })
   })

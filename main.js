@@ -74,8 +74,10 @@ class IpcResponse {
   }
 }
 
+/* Magic between electron browser window and computer */
+
 ipcMain.on('perun-request', async (event, msg) => {
-  logger.log(event, msg)
+  logger.log('perun-request', msg)
   let status = 200
   let data = null
   switch(msg.name) {
@@ -87,7 +89,7 @@ ipcMain.on('perun-request', async (event, msg) => {
       data = await dbSelectAsync('SELECT * from workspace')
       break
     }
-    case 'workspace.activate': {
+    case 'workspace.select': {
       await dbModifyAsync(`
         UPDATE workspace 
           SET status = 1 
@@ -251,7 +253,7 @@ const launchMain = async () => {
       preload: path.join(__dirname, 'main.preload.js')
     }
   })
-  global.mainWindow.loadURL(url.format({
+  await global.mainWindow.loadURL(url.format({
       pathname: path.join(__dirname, 'public/index.html'),
       protocol: 'file:',
       slashes: true

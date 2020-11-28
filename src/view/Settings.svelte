@@ -37,6 +37,7 @@
             <h3>{workspace.id}</h3>
             <p>{workspace.name}</p>
             <p>{workspace.path}</p>
+            <p>{workspace.status}</p>
           </div>
         {/each}
       </div>
