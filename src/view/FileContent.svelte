@@ -13,7 +13,8 @@
       } else if (content.fileType === 1) {
         const value = new TextDecoder("utf-8").decode(content.fileData)
         monaco.editor.create(el, {
-          value: '',
+          value: value,
+          language: 'python'
         })
       } else {
         const pre = document.createElement('pre')

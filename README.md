@@ -14,4 +14,5 @@ Make notes / learn / write / read / organise knowledge
 - [svelte-fa](https://cweili.github.io/svelte-fa/)
 - [fontawesome](https://fontawesome.com/icons?d=gallery&q=plus)
 - [tagify](https://yaireo.github.io/tagify/)
-- [markedjs](https://marked.js.org/)  
+- [markedjs](https://marked.js.org/)
+- [monaco-editor](https://microsoft.github.io/monaco-editor/playground.html)  
