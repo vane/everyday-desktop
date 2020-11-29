@@ -78,6 +78,13 @@
     })
   }
 
+  const handlePathKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      console.log(currentPath)
+      handleListDir()
+    }
+  }
+
   /* Save file */
   /*const handleFileSave = (data) => {
     console.log(data)
@@ -100,12 +107,12 @@
       <button on:click={handleListPrevDir}>
         <Fa icon={faArrowLeft} />
       </button>
-      <input value={currentPath} style="max-width: 80px;">
+      <input bind:value={currentPath} style="max-width: 80px;" on:keyup={handlePathKeyUp}>
       <button on:click={handleListDir}>
         <Fa icon={faPlus} />
       </button>
     </div>
-    <div style="display: flex;flex-direction: column; width: 140px;margin-top: 20px;">
+    <div style="display: flex;flex-direction: column; width: 140px;margin-top: 20px; overflow-y: auto; height: calc(100vh - 200px);">
       {#each currentDirList as fdata}
         {#if fdata.isDir }
           <button style="font-size: 1.2em;" on:click={() => handleNavigateDir(fdata)}>
