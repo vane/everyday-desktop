@@ -1,6 +1,7 @@
 <script lang="ts">
   import {onMount} from 'svelte'
   import {settingsGet, SettingsKey, settingsSet} from '../../api/settings.api'
+  import {timeStatStore} from '../../app.store'
 
   enum TimeState {
     Basic = 'BASIC',
@@ -68,6 +69,7 @@
       timeStringStyleCurrent = timeStringStyleOver
       buttonStyleCurrent = buttonStyleOver
     }
+    timeStatStore.update(() =>String(state))
   }
 
   const handleMouseClick = async () => {

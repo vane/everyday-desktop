@@ -94,3 +94,6 @@ export interface FileContent {
 
 }
 export const openedFileStore = writable<FileContent>(null)
+
+/* TimeState*/
+export const timeStatStore = writable<string>('')

@@ -7,7 +7,7 @@
     faPlus,
     faSave,
   } from '@fortawesome/free-solid-svg-icons'
-  import {openedFileStore, workspaceStore} from '../app.store'
+  import {openedFileStore, timeStatStore, workspaceStore} from '../app.store'
 
   interface FilePath {
     name: string,
@@ -98,6 +98,16 @@
       handleListDir()
     }
   })
+
+  let isAdvanced = false
+  timeStatStore.subscribe((data) => {
+    if (data === 'ADVANCED') {
+      isAdvanced = true
+    } else {
+      isAdvanced = false
+    }
+    console.log('timeStatStore', data)
+  })
 </script>
 <div>
   {#if $workspaceStore.selected}
@@ -110,7 +120,7 @@
         <Fa icon={faPlus} />
       </button>
     </div>
-    <div class="file-list">
+    <div class="file-list" class:advanced={isAdvanced} class:basic={!isAdvanced}>
       {#each currentDirList as fdata}
         {#if fdata.isDir }
           <button style="font-size: 1.2em;" on:click={() => handleNavigateDir(fdata)}>
@@ -140,11 +150,16 @@
   </div>-->
 </div>
 <style>
+  .advanced {
+      height: calc(100vh - 204px);
+  }
+  .basic {
+      height: calc(100vh - 187px);
+  }
   .file-list {
       display: flex;
       flex-direction: column;
       width: 140px;
-      height: calc(100vh - 184px);
       margin-top: 20px;
       overflow-y: auto;
       overflow-x: hidden;
