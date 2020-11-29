@@ -201,9 +201,12 @@ ipcMain.on('perun-request', async (event, msg) => {
           data = `File to big ${sizeMB}MB, maximum size is ${maxMB}MB`
         } else {
           const readfile = util.promisify(fs.readFile)
-          const fdata = await readfile(fpath)
+          let fdata = await readfile(fpath)
           const ext = path.extname(fpath)
           const fileType = isKnownFileType(ext)
+          if (fileType === 4) {
+            fdata = fdata.toString('base64')
+          }
           data = {
             path: basepath,
             fileType: fileType,
