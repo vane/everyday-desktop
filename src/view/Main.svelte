@@ -4,6 +4,7 @@
   import TopBar from './TopBar.svelte'
   import {onMount} from 'svelte'
   import TextEditor from './TextEditor.svelte'
+  import FileContent from './FileContent.svelte'
 
   onMount(() => {
     const inputElm = document.querySelector('#tag_input')
@@ -11,12 +12,10 @@
     // console.log(tags)
   })
 </script>
-<div class="w-100">
+<div class="w-100" style="height: 100%;">
   <TopBar />
-  <div style="overflow: auto;">
-    <TextEditor />
-  </div>
-  <div style="width: 100%;">
+  <FileContent />
+  <!--<div style="width: 100%;">
     <input id="tag_input" style="width: 200px;" />
-  </div>
+  </div>-->
 </div>

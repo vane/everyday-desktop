@@ -23,7 +23,7 @@
 	<Menu />
 	<ResizeBar />
 	<div class="app-content">
-		<Router {routes} />
+		<Router {routes} style="margin: 0; padding: 0;" />
 	</div>
 </div>
 

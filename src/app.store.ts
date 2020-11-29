@@ -74,3 +74,23 @@ export const workspaceStore = (() => {
 
 /* Menu width */
 export const menuWidthStore = writable<number>(150)
+
+/* File */
+
+export enum FileType {
+  Unknown,
+  SourceCode,
+  PlainText,
+  MarkDown,
+  Image,
+  Video
+}
+
+export interface FileContent {
+  path: string,
+  fileType: FileType,
+  ext: string,
+  fileData: Uint8Array
+
+}
+export const openedFileStore = writable<FileContent>(null)

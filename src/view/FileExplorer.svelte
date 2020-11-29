@@ -7,7 +7,7 @@
     faPlus,
     faSave,
   } from '@fortawesome/free-solid-svg-icons'
-  import {workspaceStore} from '../app.store'
+  import {openedFileStore, workspaceStore} from '../app.store'
 
   interface FilePath {
     name: string,
@@ -20,15 +20,8 @@
     files: FilePath[],
   }
 
-  interface FileDataResponse {
-    path: string,
-    ext: string,
-    data: Uint8Array,
-  }
-
   let currentPath = '/'
   let currentDirList = []
-  let currentContent = null
 
   /* Go to previous directory */
   const handleListPrevDir = () => {
@@ -66,15 +59,20 @@
 
   /* Open file */
   const handleOpenFile = (fdata: FilePath) => {
+    console.log('Open file')
     window.perun.workspaceFileRead({
       workspaceId: $workspaceStore.selected.id,
       path: `${currentPath}${fdata.name}`
     }, (msg) => {
-      const data: FileDataResponse = msg.data
-      currentContent = {
-        path: data.path,
-        data: new TextDecoder("utf-8").decode(data.data)
+      if (msg.status === 200) {
+        openedFileStore.update(() => msg.data)
+      } else {
+        alert(msg.data)
       }
+      /*currentContent = {
+        path: data.path,
+        data: txt
+      }*/
     })
   }
 
@@ -112,7 +110,7 @@
         <Fa icon={faPlus} />
       </button>
     </div>
-    <div style="display: flex;flex-direction: column; width: 140px;margin-top: 20px; overflow-y: auto; height: calc(100vh - 200px);">
+    <div class="file-list">
       {#each currentDirList as fdata}
         {#if fdata.isDir }
           <button style="font-size: 1.2em;" on:click={() => handleNavigateDir(fdata)}>
@@ -141,3 +139,14 @@
     {/if}
   </div>-->
 </div>
+<style>
+  .file-list {
+      display: flex;
+      flex-direction: column;
+      width: 140px;
+      height: calc(100vh - 184px);
+      margin-top: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+  }
+</style>

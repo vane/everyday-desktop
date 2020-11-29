@@ -9,6 +9,8 @@ const { openWebsite } = require('./perun/open.website')
 const { dbInitialize, dbSelectAsync, dbModifyAsync } = require('./perun/db')
 const { logger } = require('./perun/log')
 const { fileDirOpen } = require('./perun/file.open')
+const { isKnownFileType } = require('./perun/file.extension')
+const { MAX_FILE_SIZE, SIZE_1MB } = require('./perun/config')
 
 
 /* Web-Content Extension */
@@ -175,7 +177,11 @@ ipcMain.on('perun-request', async (event, msg) => {
         break
       }
       const workspace = result[0]
-      let basepath = msg.data.path.replace(new RegExp('^[/..]+'), '')
+      let basepath = msg.data.path
+      // check for .. and replace
+      if (msg.data.path.indexOf('..') !== -1) {
+        basepath = basepath.replace(new RegExp('^[/..]+'), '')
+      }
       const fpath = `${workspace.path}/${basepath}`
       if (msg.name === 'workspace.file.write') {
         try {
@@ -186,12 +192,24 @@ ipcMain.on('perun-request', async (event, msg) => {
           data = e.message
         }
       } else {
-        const readfile = util.promisify(fs.readFile)
-        const fdata = await readfile(fpath)
-        data = {
-          path: basepath,
-          ext: path.extname(fpath),
-          data: fdata,
+        const stat = util.promisify(fs.stat)
+        const fstat = await stat(fpath)
+        if (fstat.size > MAX_FILE_SIZE) {
+          status = 400
+          const sizeMB = Math.round(fstat.size/SIZE_1MB)
+          const maxMB = Math.round(MAX_FILE_SIZE/SIZE_1MB)
+          data = `File to big ${sizeMB}MB, maximum size is ${maxMB}MB`
+        } else {
+          const readfile = util.promisify(fs.readFile)
+          const fdata = await readfile(fpath)
+          const ext = path.extname(fpath)
+          const fileType = isKnownFileType(ext)
+          data = {
+            path: basepath,
+            fileType: fileType,
+            ext: ext,
+            fileData: fdata,
+          }
         }
       }
       break
