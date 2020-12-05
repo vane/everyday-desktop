@@ -1,6 +1,8 @@
 Perun ( work in progress )
 ====
 
+[![CodeFactor](https://www.codefactor.io/repository/github/vane/perun/badge)](https://www.codefactor.io/repository/github/vane/perun)
+
 Make notes / learn / write / read / organise knowledge
 
 
