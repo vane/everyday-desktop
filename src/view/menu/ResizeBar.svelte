@@ -8,7 +8,7 @@
 	let oldWidth = null
 
   const handleMouseDown = (e: MouseEvent) => {
-		console.log('Resize', e)
+  	console.log('Resize old size : ', $menuWidthStore)
 		pointDown = {x: e.clientX, y: e.clientY}
 		document.addEventListener('mouseup', handleMouseUp)
 		document.addEventListener('mousemove', handleMouseMove)
@@ -23,6 +23,7 @@
 
 	const handleMouseUp = () => {
   	pointDown = null
+		console.log(`Resize new size : ${$menuWidthStore}`)
 		document.removeEventListener('mouseup', handleMouseUp)
 		document.removeEventListener('mousemove', handleMouseMove)
 	}

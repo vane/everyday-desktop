@@ -1,3 +1,12 @@
+class FileExtension {
+  static Unknown = 0
+  static SourceCode = 1
+  static PlainText = 2
+  static MarkDown = 3
+  static Image = 4
+  static Video = 5
+}
+
 const sourceCode = [
   '.c', '.h', // C
   '.cpp', '.cc','.cxx','.hpp','.hh','.hxx', // C++
@@ -37,15 +46,17 @@ const video = [
 ]
 exports.isKnownFileType = (ext) => {
   if (sourceCode.indexOf(ext) !== -1) {
-    return 1
+    return FileExtension.SourceCode
   } else if (plainText.indexOf(ext) !== -1) {
-    return 2
+    return FileExtension.PlainText
   } else if (markDown.indexOf(ext) !== -1) {
-    return 3
+    return FileExtension.MarkDown
   } else if (image.indexOf(ext) !== -1) {
-    return 4
+    return FileExtension.Image
   } else if (video.indexOf(ext) !== -1) {
-    return 5
+    return FileExtension.Video
   }
-  return 0
+  return FileExtension.Unknown
 }
+
+exports.FileExtension = FileExtension

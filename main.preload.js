@@ -58,12 +58,6 @@ contextBridge.exposeInMainWorld('perun', {
     ipcRenderer.send('perun-request', req)
     seq += 1
   },
-  workspaceFileDiscard: (data, callback) => {
-    resp_map[seq] = callback
-    const req = new IpcRequest(seq, 'workspace.file.discard', data)
-    ipcRenderer.send('perun-request', req)
-    seq += 1
-  },
   /* Settings */
   settingsGet: (data, callback) => {
     resp_map[seq] = callback
@@ -82,8 +76,13 @@ ipcRenderer.on('perun-reply', (event, arg) => {
 	const callback = resp_map[arg.seq]
   if (callback) {
     // logger.log('callback invoke', arg)
-    callback(arg)
-    delete resp_map[seq]
+    try {
+      callback(arg)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      delete resp_map[seq]
+    }
   } else {
     // logger.warn('callback empty', arg)
   }

@@ -36,7 +36,10 @@ export default {
 		sourcemap: true,
 		format: 'es',
 		name: 'app',
-		dir: 'public/build/'
+		dir: 'public/build/',
+		globals: {
+			['perun']: 'perun'
+		}
 	},
 	plugins: [
 		css({ output: 'vendor.css' }),

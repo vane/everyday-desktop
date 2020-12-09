@@ -7,18 +7,12 @@
     faPlus,
     faSave,
   } from '@fortawesome/free-solid-svg-icons'
-  import {openedFileStore, timeStatStore, workspaceStore} from '../app.store'
-
-  interface FilePath {
-    name: string,
-    isDir: boolean,
-    size: number,
-  }
-
-  interface FilePathResponse {
-    path: string,
-    files: FilePath[],
-  }
+  import {
+    menuWidthStore,
+    timeStatStore, workspaceFileRead,
+    workspaceDirectoryList,
+    workspaceStore
+  } from '../app.store'
 
   let currentPath = '/'
   let currentDirList = []
@@ -33,21 +27,10 @@
   }
 
   /* Navigate to current directory */
-  const handleListDir = () => {
-    window.perun.workspaceDirList({
+  const handleListDir = async () => {
+    currentDirList = await workspaceDirectoryList({
       workspaceId: $workspaceStore.selected.id,
       path: currentPath,
-    }, (msg) => {
-      const data: FilePathResponse = msg.data
-      data.files.sort((a, b) => {
-        if (a.isDir && !b.isDir) {
-          return -1
-        } else if (b.isDir && !a.isDir) {
-          return 1
-        }
-        return 0
-      })
-      currentDirList = data.files
     })
   }
 
@@ -60,19 +43,11 @@
   /* Open file */
   const handleOpenFile = (fdata: FilePath) => {
     console.log('Open file')
-    window.perun.workspaceFileRead({
+    workspaceFileRead({
       workspaceId: $workspaceStore.selected.id,
-      path: `${currentPath}${fdata.name}`
-    }, (msg) => {
-      if (msg.status === 200) {
-        openedFileStore.update(() => msg.data)
-      } else {
-        alert(msg.data)
-      }
-      /*currentContent = {
-        path: data.path,
-        data: txt
-      }*/
+      path: `${currentPath}${fdata.name}`,
+      start: 0,
+      end: 10000,
     })
   }
 
@@ -99,6 +74,13 @@
     }
   })
 
+  menuWidthStore.subscribe((data) => {
+    const el = document.getElementById('explorer-path-input')
+    if (data && el) {
+      el.style.width = `${data-70}px`
+    }
+  })
+
   let isAdvanced = false
   timeStatStore.subscribe((data) => {
     if (data === 'ADVANCED') {
@@ -109,13 +91,14 @@
     console.log('timeStatStore', data)
   })
 </script>
-<div>
+<div style="width: 100%;align-items: center;display: flex;flex-direction: column;">
   {#if $workspaceStore.selected}
     <div style="display: flex;flex-direction: row;">
       <button on:click={handleListPrevDir}>
         <Fa icon={faArrowLeft} />
       </button>
-      <input bind:value={currentPath} style="max-width: 80px;" on:keyup={handlePathKeyUp}>
+      <input id="explorer-path-input"
+             bind:value={currentPath} style="width: 80px;" on:keyup={handlePathKeyUp}>
       <button on:click={handleListDir}>
         <Fa icon={faPlus} />
       </button>
@@ -159,7 +142,8 @@
   .file-list {
       display: flex;
       flex-direction: column;
-      width: 140px;
+      width: 95%;
+      user-select: none;
       margin-top: 20px;
       overflow-y: auto;
       overflow-x: hidden;

@@ -1,16 +1,25 @@
 const { app, BrowserWindow, screen, ipcMain } = require('electron')
 const path = require('path')
 const fs = require('fs')
-const util = require('util')
 const url = require('url')
 const uuid = require('uuid')
 const net = require('net')
 const { openWebsite } = require('./perun/open.website')
 const { dbInitialize, dbSelectAsync, dbModifyAsync } = require('./perun/db')
 const { logger } = require('./perun/log')
-const { fileDirOpen } = require('./perun/file.open')
-const { isKnownFileType } = require('./perun/file.extension')
-const { MAX_FILE_SIZE, SIZE_1MB } = require('./perun/config')
+const {
+  workspaceList,
+  workspaceSelect,
+  workspaceAdd,
+  workspaceRemove,
+  workspaceDirList,
+  workspaceFileRead,
+  workspaceFileWrite,
+} = require('./perun/ipc/ipc.workspace')
+const {
+  settingsGet,
+  settingsSet
+} = require('./perun/ipc/ipc.settings')
 
 
 /* Web-Content Extension */
@@ -88,155 +97,54 @@ ipcMain.on('perun-request', async (event, msg) => {
       break
     }
     case 'workspace.list': {
-      data = await dbSelectAsync('SELECT * from workspace')
+      data = await workspaceList()
       break
     }
     case 'workspace.select': {
-      await dbModifyAsync(`
-        UPDATE workspace 
-          SET status = 1 
-        WHERE id = ${msg.data.workspaceId}
-      `)
-      await dbModifyAsync(`
-        UPDATE workspace 
-          SET status = 0 
-        WHERE status = 1 AND id != ${msg.data.workspaceId}
-      `)
+      await workspaceSelect(msg.data.workspaceId)
       break
     }
     case 'workspace.add': {
+      data = await workspaceAdd(msg.data)
+      break
+    }
+    case 'workspace.remove': {
+      await workspaceRemove(msg.data)
+      break
+    }
+    case 'workspace.dir.list': {
       try {
-        const selectedDir = await fileDirOpen()
-        let workspaceName = msg.data.workspaceName
-        if (!workspaceName) {
-          const a = selectedDir.split('/')
-          workspaceName = a[a.length - 1]
-        }
-        const result = await dbModifyAsync(`
-        INSERT INTO workspace (name, path, status) 
-          VALUES ('${workspaceName}', '${selectedDir}', 1)
-        `)
-        // Update all other workspaces as not selected
-        await dbModifyAsync(`
-        UPDATE workspace 
-          SET status = 0 
-        WHERE status = 1 AND id != ${result.lastID}
-        `)
-        data = {
-          id: result.lastID,
-          name: workspaceName,
-          path: selectedDir,
-          status: 1,
-        }
+        data = await workspaceDirList(msg.data)
       } catch (e) {
-        status = 400
+        status = e.code
         data = e.message
       }
       break
     }
-    case 'workspace.remove': {
-      break
-    }
-    case 'workspace.dir.list': {
-      const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
-      if (result.length === 0) {
-        status = 400
-        data = 'Workspace not found'
-        break
-      }
-      const workspace = result[0]
-      const readdir = util.promisify(fs.readdir)
-      const stat = util.promisify(fs.stat)
-
-      // Let's trim this cause user can go to other dir using /../../
-      let basepath = '/'+msg.data.path.replace(new RegExp('^[/..]+'), '')
-      const readpath = `${workspace.path}${basepath}`
-
-      const fdata = await readdir(readpath)
-      const files = []
-      for (const f of fdata) {
-        const fstat = await stat(`${readpath}/${f}`)
-        files.push({
-          name: f,
-          isDir: fstat.isDirectory(),
-          size: fstat.size,
-        })
-      }
-      data = {
-        path: basepath,
-        files: files,
+    case 'workspace.file.read': {
+      try {
+        data = await workspaceFileRead(msg.data)
+      } catch (e) {
+        status = e.code
+        data = e.message
       }
       break
     }
-    case 'workspace.file.read':
     case 'workspace.file.write': {
-      const result = await dbSelectAsync(`SELECT * FROM workspace WHERE id = ${msg.data.workspaceId}`)
-      if (result.length === 0) {
-        status = 400
-        data = 'Workspace not found'
-        break
-      }
-      const workspace = result[0]
-      let basepath = msg.data.path
-      // check for .. and replace
-      if (msg.data.path.indexOf('..') !== -1) {
-        basepath = basepath.replace(new RegExp('^[/..]+'), '')
-      }
-      const fpath = `${workspace.path}/${basepath}`
-      if (msg.name === 'workspace.file.write') {
-        try {
-          const writefile = util.promisify(fs.writeFile)
-          await writefile(fpath, msg.data.data)
-        } catch (e) {
-          status = 400
-          data = e.message
-        }
-      } else {
-        const stat = util.promisify(fs.stat)
-        const fstat = await stat(fpath)
-        if (fstat.size > MAX_FILE_SIZE) {
-          status = 400
-          const sizeMB = Math.round(fstat.size/SIZE_1MB)
-          const maxMB = Math.round(MAX_FILE_SIZE/SIZE_1MB)
-          data = `File to big ${sizeMB}MB, maximum size is ${maxMB}MB`
-        } else {
-          const readfile = util.promisify(fs.readFile)
-          let fdata = await readfile(fpath)
-          const ext = path.extname(fpath)
-          const fileType = isKnownFileType(ext)
-          if (fileType === 4) {
-            fdata = fdata.toString('base64')
-          }
-          data = {
-            path: basepath,
-            fileType: fileType,
-            ext: ext,
-            fileData: fdata,
-          }
-        }
+      try {
+        await workspaceFileWrite(msg.data)
+      } catch (e) {
+        status = e.code
+        data = e.message
       }
       break
     }
-    case 'workspace.file.discard': {
+    case 'settings.set': {
+      data = await settingsSet(msg.data)
       break
     }
-    case 'settings.set':
     case 'settings.get': {
-      data = await dbSelectAsync(`
-        SELECT * FROM settings WHERE key = '${msg.data.key}'
-      `)
-      data = data[0]
-      if (msg.name === 'settings.set') {
-        if (data) {
-          await dbModifyAsync(`
-            UPDATE settings SET value = '${msg.data.value}' WHERE key = '${msg.data.key}'
-          `)
-        } else {
-          await dbModifyAsync(`
-            INSERT INTO settings (key, value) VALUES ('${msg.data.key}', '${msg.data.value}')
-          `)
-        }
-      }
+      data = await settingsGet(msg.data)
       break
     }
     default: {
